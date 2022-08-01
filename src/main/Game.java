@@ -22,11 +22,13 @@ public class Game implements Runnable {
 
     private void startGameLoop() {
         gameThread = new Thread(this);
+        gameThread.run();
     }
 
     @Override 
     public void run() {
         double timePerFrame = 1000000000 / FPS_LIMIT; // in nanoseconds
+        System.out.println("ASKDOLASDJ");
 
         long now, lastFrame;
         now = lastFrame = System.nanoTime();       
