@@ -1,5 +1,6 @@
 package entities;
 import main.Loader;
+import main.GamePanel;
 
 import java.awt.Graphics;
 import java.awt.image.AffineTransformOp;
@@ -8,19 +9,44 @@ import java.awt.geom.AffineTransform;
 
 public class Pipe {
 
-    BufferedImage pipeImg;
+    private GamePanel gamePanel;
+
+    BufferedImage pipeImg; 
     private int gap; 
 
     private int x, y; // Centre of gap 
 
-    public Pipe() {
+    public Pipe(GamePanel gamePanel) {
+        this.gamePanel = gamePanel; 
+
         Loader loader = new Loader();
         pipeImg = loader.importImg("pipe-green.png");
         gap = loader.importImg("yellowbird-midflap.png").getHeight() * 2;
     } 
 
+    public boolean isColliding(int playerTop, int playerBottom, int playerRight, int playerLeft) {
+        int width = pipeImg.getWidth(); 
+        int leftBoundary = x - width; 
+        int rightBoundary = x + width;
+
+        int bottomOfTopPipe = y - gap;
+        int topOfBottomPipe = y + gap;
+
+        boolean betweenEdges = (playerRight >= leftBoundary && playerRight <= rightBoundary) || (playerLeft >= leftBoundary && playerLeft <= rightBoundary);
+        boolean outsideGap = playerTop <= bottomOfTopPipe || playerBottom >= topOfBottomPipe;
+
+        if (betweenEdges && outsideGap)
+            return true;
+
+        return false; 
+    }
+
     public void move(double dX) {
         x -= dX; 
+
+        int width = pipeImg.getWidth();
+        if (x <= -width/2) 
+            gamePanel.resetPipe(this);
     }
 
     public void spawn(int x, int y) {

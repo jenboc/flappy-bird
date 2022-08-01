@@ -54,7 +54,7 @@ public class GamePanel extends JPanel {
     private void initPipes() {
         pipes = new Pipe[numPipes];
         for (int i = 0; i < numPipes; i++) {
-            pipes[i] = new Pipe();
+            pipes[i] = new Pipe(this);
             int x = width + 250*(i+1);
             int y = generatePipeY();
             pipes[i].spawn(x, y);
@@ -63,14 +63,16 @@ public class GamePanel extends JPanel {
 
     public void resetPipe(Pipe p) {
         int y = generatePipeY();
-        p.spawn(pipeSpawnX, y);
+        p.spawn(pipeSpawnX, y);  
     }
 
     public void updateObjects(int gravValue, int pipeDelta, double timePerFrame) {
-        player.update(gravValue, timePerFrame);
+        player.update(gravValue, timePerFrame, pipes);
 
-        for (Pipe pipe : pipes) 
-            pipe.move(pipeDelta);
+        if (player.isMoving()) {
+            for (Pipe pipe : pipes) 
+                pipe.move(pipeDelta);
+        }
     }
 
     private void setPanelSize() {

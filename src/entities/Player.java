@@ -9,7 +9,7 @@ public class Player {
     private final int flapForce = 25;
 
     private int x, y;
-    public double dY;
+    private double dY;
 
     private int bottomOfScreen;
 
@@ -17,6 +17,9 @@ public class Player {
     private int aniTick, aniSpeed = 30; 
     private int aniIndex = 2;
     private boolean flapping = false;
+
+    public boolean alive = true;
+    private boolean canMove = true;
 
     public Player(int startingX, int startingY, int bottomOfScreen) {
         x = startingX;
@@ -44,7 +47,8 @@ public class Player {
     }
 
     public void flap() {
-        dY = -flapForce;
+        if (canMove && alive)
+            dY = -flapForce;
         flapping = true;
         aniTick = 0;
         aniIndex = 0;
@@ -54,21 +58,40 @@ public class Player {
         dY += gravValue;
     }
 
-    private void checkCollisions() {
+    private void checkCollisions(Pipe[] pipes) {
         BufferedImage model = flapAnimation[aniIndex];
         int height = model.getHeight();
+        int width = model.getWidth();
+        
         int cY = y + height/2;
+        int bY = y + height/2;
+        int rX = x + width/4;
+        int lX = x - width/4;
+        
+        for (Pipe pipe : pipes) {
+            boolean collided = pipe.isColliding(y, bY, rX, lX);
 
-        if (cY >= bottomOfScreen) {
-            System.out.println("Dead");
+            if (collided) {
+                canMove = false;
+                break;
+            }
+        }
+
+        if (cY >= bottomOfScreen && alive) {
+            alive = false;
+            System.out.println("Show menu here");
         }
     }
 
-    public void update(double gravValue, double deltaTime) {
+    public boolean isMoving() {
+        return canMove && alive;
+    }
+
+    public void update(double gravValue, double deltaTime, Pipe[] pipes) {
         applyGravity(gravValue);
         y += dY / 10;      
 
-        checkCollisions(); 
+        checkCollisions(pipes); 
     }
 
     public void draw(Graphics g) {
