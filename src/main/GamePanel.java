@@ -1,7 +1,10 @@
 package main;
 import inputs.KeyboardInputs;
 import entities.Player;
+import entities.Pipe;
 
+import java.awt.image.BufferedImage;
+import java.util.Random;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
@@ -9,19 +12,70 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel {
 
-    private final int width = 1280;
-    private final int height = 800;
+    private final int numPipes = 3;
+    private final int pipeSpawnX = 750;
+    private int pipeYMin;
+    private int pipeYMax;
+
+    private BufferedImage background;
+    private int width;
+    private int height;
     
-    Player player;
+    public Player player;
+    public Pipe[] pipes; 
+
+    private Random random; 
     
     public GamePanel() {
-        addKeyListener(new KeyboardInputs());          
+        random = new Random();
+
+        Loader loader = new Loader();
+        background = loader.importImg("background-day.png");
         setPanelSize();
 
-        player = new Player(width/2-50, height/2);
+        player = new Player(width/2-50, height/2, height);
+        addKeyListener(new KeyboardInputs(player));          
+        
+        int pipeHeight = loader.importImg("pipe-green.png").getHeight();
+        pipeYMin = height - pipeHeight;
+        pipeYMax = pipeHeight;
+
+        initPipes();
+    }
+
+    private int generatePipeY() {
+        int maxRandom = (pipeYMax-pipeYMin) + 1;
+        int y = random.nextInt(maxRandom);
+        y += pipeYMin;
+
+        return y;
+    }
+
+    private void initPipes() {
+        pipes = new Pipe[numPipes];
+        for (int i = 0; i < numPipes; i++) {
+            pipes[i] = new Pipe();
+            int x = width + 250*(i+1);
+            int y = generatePipeY();
+            pipes[i].spawn(x, y);
+        }
+    }
+
+    public void resetPipe(Pipe p) {
+        int y = generatePipeY();
+        p.spawn(pipeSpawnX, y);
+    }
+
+    public void updateObjects(int gravValue, int pipeDelta, double timePerFrame) {
+        player.update(gravValue, timePerFrame);
+
+        for (Pipe pipe : pipes) 
+            pipe.move(pipeDelta);
     }
 
     private void setPanelSize() {
+        width = background.getWidth();
+        height = background.getHeight();
         Dimension size = new Dimension(width, height);
         setMinimumSize(size);
         setPreferredSize(size);
@@ -30,6 +84,11 @@ public class GamePanel extends JPanel {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        player.draw(g);
+        g.drawImage(background, 0, 0, null);
+        player.draw(g);   
+        
+        for (Pipe pipe : pipes) {
+            pipe.draw(g);
+        }
     }
 }

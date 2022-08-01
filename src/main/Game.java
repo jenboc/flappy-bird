@@ -1,6 +1,12 @@
 package main;
 
+import entities.Player;
+import entities.Pipe;
+
 public class Game implements Runnable {
+
+    private final int gravValue = 1;
+    private int pipeDelta = 1;
 
     private GameWindow gameWindow;
     private GamePanel gamePanel;
@@ -28,14 +34,14 @@ public class Game implements Runnable {
     @Override 
     public void run() {
         double timePerFrame = 1000000000 / FPS_LIMIT; // in nanoseconds
-        System.out.println("ASKDOLASDJ");
-
+        
         long now, lastFrame;
         now = lastFrame = System.nanoTime();       
 
         while (true) {
             now = System.nanoTime(); 
             if (now - lastFrame >= timePerFrame) {
+                gamePanel.updateObjects(gravValue, pipeDelta, timePerFrame);
                 gamePanel.repaint();
                 lastFrame = now;
             }

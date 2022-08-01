@@ -5,17 +5,26 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class Player {
+
+    private final int flapForce = 25;
+
     private int x, y;
-    public int dX, dY;
+    public double dY;
+
+    private int bottomOfScreen;
 
     private BufferedImage[] flapAnimation; 
-    private int aniIndex, aniTick, aniSpeed = 30; 
+    private int aniTick, aniSpeed = 30; 
+    private int aniIndex = 2;
+    private boolean flapping = false;
 
-    public Player(int startingX, int startingY) {
+    public Player(int startingX, int startingY, int bottomOfScreen) {
         x = startingX;
         y = startingY;
 
-        dX = dY = 0;
+        this.bottomOfScreen = bottomOfScreen;
+
+        dY = 0;
         
         Loader loader = new Loader();
         String[] fileNames = {"yellowbird-upflap.png", "yellowbird-midflap.png", "yellowbird-downflap.png"};
@@ -24,12 +33,42 @@ public class Player {
 
     private void updateAnimationTick() {
         aniTick++;
-        if (aniTick >= aniSpeed) {
+        if (aniTick >= aniSpeed && flapping) {
             aniTick = 0;
             aniIndex++;
-            if (aniIndex >= flapAnimation.length)
-                aniIndex = 0;
+            if (aniIndex >= flapAnimation.length) {
+                aniIndex = flapAnimation.length-1;
+                flapping = false;
+            } 
         }
+    }
+
+    public void flap() {
+        dY = -flapForce;
+        flapping = true;
+        aniTick = 0;
+        aniIndex = 0;
+    }
+
+    private void applyGravity(double gravValue) {
+        dY += gravValue;
+    }
+
+    private void checkCollisions() {
+        BufferedImage model = flapAnimation[aniIndex];
+        int height = model.getHeight();
+        int cY = y + height/2;
+
+        if (cY >= bottomOfScreen) {
+            System.out.println("Dead");
+        }
+    }
+
+    public void update(double gravValue, double deltaTime) {
+        applyGravity(gravValue);
+        y += dY / 10;      
+
+        checkCollisions(); 
     }
 
     public void draw(Graphics g) {
