@@ -40,7 +40,13 @@ public class GamePanel extends JPanel {
         pipeYMin = height - pipeHeight;
         pipeYMax = pipeHeight;
 
-        initPipes();
+        startGame();
+    }
+
+    private void startGame() {
+        player.move(width/2-50, height/2);
+        player.reset();
+        initPipes();         
     }
 
     private int generatePipeY() {
@@ -73,6 +79,10 @@ public class GamePanel extends JPanel {
             for (Pipe pipe : pipes) 
                 pipe.move(pipeDelta);
         }
+
+        if (!player.alive) {
+            startGame();
+        }
     }
 
     private void setPanelSize() {
@@ -87,10 +97,11 @@ public class GamePanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(background, 0, 0, null);
-        player.draw(g);   
-        
+ 
         for (Pipe pipe : pipes) {
             pipe.draw(g);
         }
+
+        player.draw(g);  
     }
 }

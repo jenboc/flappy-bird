@@ -46,6 +46,17 @@ public class Player {
         }
     }
 
+    public void move(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void reset() {
+        canMove = true;
+        alive = true;
+        dY = 0;
+    }
+
     public void flap() {
         if (canMove && alive)
             dY = -flapForce;
