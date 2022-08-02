@@ -1,4 +1,5 @@
 package entities;
+import main.Game;
 import main.Loader;
 
 import java.awt.Graphics;
@@ -6,10 +7,11 @@ import java.awt.image.BufferedImage;
 
 public class Player {
 
-    private final int flapForce = 25;
+    private final float flapForce = 4.5f * Game.SCALE;
+    private final float gravValue = 0.08f * Game.SCALE;
 
-    private int x, y;
-    private double dY;
+    public float x, y;
+    private float dY;
 
     private int bottomOfScreen;
 
@@ -46,6 +48,13 @@ public class Player {
         }
     }
 
+    public int height() {
+        return flapAnimation[aniIndex].getHeight();
+    }
+    public int width() {
+        return flapAnimation[aniIndex].getWidth();
+    }
+
     public void move(int x, int y) {
         this.x = x;
         this.y = y;
@@ -65,28 +74,23 @@ public class Player {
         aniIndex = 0;
     }
 
-    private void applyGravity(double gravValue) {
+    private void applyGravity() {
         dY += gravValue;
     }
 
     private void checkCollisions(Pipe[] pipes) {
-        BufferedImage model = flapAnimation[aniIndex];
-        int height = model.getHeight();
-        int width = model.getWidth();
-        
-        int cY = y + height/2;
-        int bY = y + height/2;
-        int rX = x + width/4;
-        int lX = x - width/4;
-        
         for (Pipe pipe : pipes) {
-            boolean collided = pipe.isColliding(y, bY, rX, lX);
+            boolean collided = pipe.isColliding(this);
+
+            System.out.println(collided);
 
             if (collided) {
                 canMove = false;
                 break;
             }
         }
+
+        float cY = y + height()/2;
 
         if (cY >= bottomOfScreen && alive) {
             alive = false;
@@ -98,15 +102,16 @@ public class Player {
         return canMove && alive;
     }
 
-    public void update(double gravValue, double deltaTime, Pipe[] pipes) {
-        applyGravity(gravValue);
-        y += dY / 10;      
+    public void update(double deltaTime, Pipe[] pipes) {
+        applyGravity();
+
+        y += dY;      
 
         checkCollisions(pipes); 
     }
 
     public void draw(Graphics g) {
         updateAnimationTick(); 
-        g.drawImage(flapAnimation[aniIndex], x, y, null);
+        g.drawImage(flapAnimation[aniIndex], (int)x, (int)y, null);
     } 
 }

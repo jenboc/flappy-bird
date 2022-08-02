@@ -72,12 +72,12 @@ public class GamePanel extends JPanel {
         p.spawn(pipeSpawnX, y);  
     }
 
-    public void updateObjects(int gravValue, int pipeDelta, double timePerFrame) {
-        player.update(gravValue, timePerFrame, pipes);
+    public void updateObjects(double deltaU) {
+        player.update(deltaU, pipes);
 
         if (player.isMoving()) {
             for (Pipe pipe : pipes) 
-                pipe.move(pipeDelta);
+                pipe.move();
         }
 
         if (!player.alive) {

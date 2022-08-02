@@ -1,18 +1,15 @@
 package main;
 
-import entities.Player;
-import entities.Pipe;
-
 public class Game implements Runnable {
 
-    private final int gravValue = 1;
-    private int pipeDelta = 1;
+    public final static float SCALE = 0.5f;
 
     private GameWindow gameWindow;
     private GamePanel gamePanel;
     private Thread gameThread;
 
     private final int FPS_LIMIT = 120;
+    private final int UPS_LIMIT = 200; 
 
     public Game() {
         // Create the game panel and window
@@ -33,17 +30,29 @@ public class Game implements Runnable {
 
     @Override 
     public void run() {
-        double timePerFrame = 1000000000 / FPS_LIMIT; // in nanoseconds
+        double timePerFrame = 1000000000.0 / FPS_LIMIT; // in nanoseconds
+        double timePerUpdate = 1000000000.0 / UPS_LIMIT;
         
-        long now, lastFrame;
-        now = lastFrame = System.nanoTime();       
+        long previousTime = System.nanoTime();
+
+        double deltaU, deltaF;
+        deltaU = deltaF = 0;
 
         while (true) {
-            now = System.nanoTime(); 
-            if (now - lastFrame >= timePerFrame) {
-                gamePanel.updateObjects(gravValue, pipeDelta, timePerFrame);
+            long currentTime = System.nanoTime();
+
+            deltaU += (currentTime - previousTime) / timePerUpdate;
+            deltaF += (currentTime - previousTime) / timePerFrame;
+
+            previousTime = currentTime;
+            if (deltaU >= 1) {
+                gamePanel.updateObjects(deltaU);
+                deltaU--;
+            }
+
+            if (deltaF >= 1) {
                 gamePanel.repaint();
-                lastFrame = now;
+                deltaF--;
             }
         }
     }
