@@ -1,7 +1,8 @@
 package entities;
 import main.Game;
 import main.Loader;
-import main.GamePanel;
+
+import states.GameState;
 
 import java.awt.Graphics;
 import java.awt.image.AffineTransformOp;
@@ -12,15 +13,15 @@ public class Pipe {
 
     private final float pipeDelta = 1 * Game.SCALE;
 
-    private GamePanel gamePanel;
+    private GameState gameState;
 
     BufferedImage pipeImg; 
     private int gap; 
 
     private float x, y; // Centre of gap 
 
-    public Pipe(GamePanel gamePanel) {
-        this.gamePanel = gamePanel; 
+    public Pipe(GameState gameState) {
+        this.gameState = gameState; 
 
         Loader loader = new Loader();
         pipeImg = loader.importImg("pipe-green.png");
@@ -56,7 +57,7 @@ public class Pipe {
 
         int width = pipeImg.getWidth();
         if (x <= -width/2) 
-            gamePanel.resetPipe(this);
+            gameState.resetPipe(this);
     }
 
     public void spawn(int x, int y) {
