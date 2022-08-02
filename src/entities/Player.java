@@ -82,8 +82,6 @@ public class Player {
         for (Pipe pipe : pipes) {
             boolean collided = pipe.isColliding(this);
 
-            System.out.println(collided);
-
             if (collided) {
                 canMove = false;
                 break;
@@ -94,7 +92,6 @@ public class Player {
 
         if (cY >= bottomOfScreen && alive) {
             alive = false;
-            System.out.println("Show menu here");
         }
     }
 

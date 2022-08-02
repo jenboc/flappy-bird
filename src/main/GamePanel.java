@@ -1,5 +1,5 @@
 package main;
-import inputs.KeyboardInputs;
+import inputs.*;
 import entities.Player;
 
 import states.*;
@@ -20,6 +20,7 @@ public class GamePanel extends JPanel {
     public Player player;
 
     private StateManager stateManager;
+    private MenuState menuState;
     private GameState gameState;
     
     public GamePanel() {
@@ -28,15 +29,36 @@ public class GamePanel extends JPanel {
         setPanelSize();
 
         player = new Player(width/2-50, height/2, height);
-        addKeyListener(new KeyboardInputs(player));          
+        addKeyListener(new KeyboardInputs(this));
+        addMouseListener(new MouseInputs(this));          
 
         stateManager = new StateManager();
+        menuState = new MenuState(this);
         gameState = new GameState(this);
+        stateManager.addState(menuState);
+    }
+
+    public void inputRecieved() {
+        if (stateManager.currentState() == menuState)
+            startGame();
+        else if (stateManager.currentState() == gameState) 
+            player.flap();
+    }
+
+    public void startGame() {
         stateManager.addState(gameState);
+    }
+
+    public void showMenu() {
+        stateManager.pop();
     }
 
     public void updateObjects(double deltaU) {
         stateManager.currentState().updateObjects(deltaU);
+    
+        if (!player.alive) 
+            showMenu();
+            player.alive = true;
     }
 
     private void setPanelSize() {

@@ -74,10 +74,6 @@ public class GameState extends State {
             for (Pipe pipe : pipes) 
                 pipe.move();
         }
-
-        if (!player.alive) {
-            startGame();
-        }
     }
 
     public void paintComponent(Graphics g) {

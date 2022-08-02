@@ -1,15 +1,15 @@
 package inputs;
-import entities.Player;
+import main.GamePanel;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyboardInputs implements KeyListener {
 
-    private Player player;
+    private GamePanel gamePanel;
 
-    public KeyboardInputs(Player player) {
-        this.player = player;
+    public KeyboardInputs(GamePanel gamePanel) {
+        this.gamePanel = gamePanel; 
     }
 
     @Override 
@@ -24,8 +24,7 @@ public class KeyboardInputs implements KeyListener {
 
     @Override 
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            player.flap();
-        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) 
+            gamePanel.inputRecieved();
     }    
 }
